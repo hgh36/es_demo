@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hgh.es_demo.entity.EsTest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.BooleanQuery;
+import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -93,7 +94,8 @@ public class TestController {
         request.id(esTest.getId());
         request.source(new ObjectMapper().writeValueAsString(esTest), XContentType.JSON);
         IndexResponse index = restHighLevelClient.index(request, RequestOptions.DEFAULT);
-        System.out.println(index.status());
+        System.out.println(index.status().getStatus());
+        System.out.println(DocWriteResponse.Result.CREATED == index.getResult());
     }
 
     /**
@@ -170,6 +172,7 @@ public class TestController {
         SearchHits hits = search.getHits();
         System.out.println(hits);
         System.out.println(hits.getHits());
+        System.out.println(hits.getTotalHits().value);
         for (SearchHit hit : hits.getHits()) {
             System.out.println(stringToEntity(hit.getSourceAsString()));
         }
